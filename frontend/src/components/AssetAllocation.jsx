@@ -4,8 +4,10 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { PieChart, TrendingUp } from 'lucide-react';
 import { getSectorAllocation, getMarketCapAllocation } from '../services/endpoints';
 
+// Register chart elements
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+// Generates a palette of colors for chart segments
 const generateColors = (length) => {
   const colors = [
     '#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444',
@@ -24,6 +26,7 @@ const AssetAllocation = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch sector and market cap allocation data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -59,6 +62,7 @@ const AssetAllocation = () => {
     fetchData();
   }, []);
 
+  // Loading state
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96 bg-gray-900 rounded-xl">
@@ -70,6 +74,7 @@ const AssetAllocation = () => {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="flex justify-center items-center h-96 bg-gray-900 rounded-xl border" style={{borderColor: 'rgba(239, 68, 68, 0.2)'}}>
@@ -84,6 +89,7 @@ const AssetAllocation = () => {
     );
   }
 
+  // Converts raw data to Chart.js format
   const createChartData = (data) => ({
     labels: data.map(item => item.name),
     datasets: [{
@@ -95,6 +101,7 @@ const AssetAllocation = () => {
     }]
   });
 
+  // Chart configuration
   const chartOptions = {
     cutout: '65%',
     plugins: {
@@ -115,6 +122,7 @@ const AssetAllocation = () => {
         borderColor: '#374151',
         borderWidth: 1,
         callbacks: {
+          // Custom tooltip with value and percentage
           label: function (context) {
             const index = context.dataIndex;
             const dataset = context.dataset;
@@ -141,6 +149,7 @@ const AssetAllocation = () => {
       </div>
       
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        {/* Sector Allocation Chart */}
         <div className="chart-container">
           <div className="flex items-center mb-6">
             <div className="p-2 gradient-blue rounded-lg mr-3">
@@ -153,6 +162,7 @@ const AssetAllocation = () => {
           </div>
         </div>
         
+        {/* Market Cap Allocation Chart */}
         <div className="chart-container">
           <div className="flex items-center mb-6">
             <div className="p-2 gradient-purple rounded-lg mr-3">

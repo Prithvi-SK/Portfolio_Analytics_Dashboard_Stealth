@@ -19,6 +19,7 @@ def gain_loss_percent_calc(gain_loss: float, total_invested: float) -> float:
 def number_of_holdings_calc(db: Session) -> int:
     return db.query(Holding).count()
 
+#Calculated based on assumption due to insufficient data
 def diversification_score_calc(db: Session, total_value: float) -> float:
     # Get sector allocations
     sectors = db.query(
@@ -46,6 +47,7 @@ def diversification_score_calc(db: Session, total_value: float) -> float:
         diversification_score -= 0.5  # Penalty for fewer sectors
     return max(0, min(10, round(diversification_score, 1)))  # Ensure 0-10 range
 
+# Calculated based on assumptions due to insufficient data
 def risk_level_calc(db: Session, total_value: float) -> str:
     # Sector betas (approximations for NSE large-cap stocks)
     sector_betas = {

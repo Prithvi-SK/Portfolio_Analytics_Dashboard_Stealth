@@ -2,7 +2,7 @@ import { get } from "./apiClient";
 import { post } from "./apiClient";
 
 
-
+// Endpoints for each request
 export const getSummary = async () => {
   return get("/api/portfolio/summary");
 };

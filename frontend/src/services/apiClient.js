@@ -1,7 +1,8 @@
 import axios from "axios";
 
 
-
+// standard api client to handle getand post request
+// Base url handled by vite proxy and docker
 const apiClient = axios.create({
   baseURL: "/",
 });

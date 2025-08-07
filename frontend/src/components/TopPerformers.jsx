@@ -3,11 +3,17 @@ import { TrendingUp, TrendingDown, Award, AlertTriangle, Shield, Target } from '
 import { getSummary, getTopPerformers } from '../services/endpoints';
 
 const TopPerformers = () => {
+  // State to store top performing and worst performing stocks
   const [topPerformers, setTopPerformers] = useState({ bestPerformer: {}, worstPerformer: {} });
+
+  // State to store overall portfolio insights
   const [insights, setInsights] = useState({ diversificationScore: 0, riskLevel: '' });
+
+  // State to handle loading and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch performance insights and top performers on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -15,7 +21,8 @@ const TopPerformers = () => {
         if (summaryResponse.error) {
           throw new Error(summaryResponse.error.message || 'Failed to fetch summary data');
         }
-        
+
+        // Set portfolio-level insights
         setInsights({
           diversificationScore: summaryResponse.data.diversificationScore,
           riskLevel: summaryResponse.data.riskLevel,
@@ -25,7 +32,8 @@ const TopPerformers = () => {
         if (topPerformersResponse.error) {
           throw new Error(topPerformersResponse.error.message || 'Failed to fetch top performers');
         }
-        
+
+        // Set stock-level performance data
         setTopPerformers(topPerformersResponse.data);
       } catch (err) {
         setError(err.message);
@@ -37,6 +45,7 @@ const TopPerformers = () => {
     fetchData();
   }, []);
 
+  // Show loading spinner
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96 bg-gray-900 rounded-xl">
@@ -48,6 +57,7 @@ const TopPerformers = () => {
     );
   }
 
+  // Show error UI
   if (error) {
     return (
       <div className="flex justify-center items-center h-96 bg-gray-900 rounded-xl border" style={{borderColor: 'rgba(239, 68, 68, 0.2)'}}>
@@ -62,6 +72,7 @@ const TopPerformers = () => {
     );
   }
 
+  // Get color class based on risk level
   const getRiskLevelColor = (riskLevel) => {
     switch (riskLevel?.toLowerCase()) {
       case 'low': return 'text-green-400 bg-green-100 border-green-500';
@@ -71,6 +82,7 @@ const TopPerformers = () => {
     }
   };
 
+  // Get color class based on diversification score
   const getDiversificationColor = (score) => {
     if (score >= 8) return 'text-green-400';
     if (score >= 6) return 'text-yellow-400';
@@ -79,11 +91,13 @@ const TopPerformers = () => {
 
   return (
     <div className="glass-effect rounded-xl p-6">
+      {/* Header */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-white mb-2">Performance Insights</h2>
         <p className="text-gray-400">Key performers and portfolio analysis</p>
       </div>
 
+      {/* Top Performer Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Best Performer */}
         <div className="card group bg-gradient-green" style={{borderColor: 'rgba(16, 185, 129, 0.2)'}}>
@@ -162,7 +176,7 @@ const TopPerformers = () => {
         </div>
       </div>
 
-      {/* Key Insights */}
+      {/* Portfolio Health Insights */}
       <div className="chart-container">
         <div className="flex items-center mb-6">
           <div className="p-2 gradient-blue rounded-lg mr-3">
@@ -172,6 +186,7 @@ const TopPerformers = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Diversification Score */}
           <div className="bg-gray-700 rounded-lg p-4" style={{backgroundColor: 'rgba(55, 65, 81, 0.3)'}}>
             <div className="flex items-center mb-3">
               <Shield className="w-5 h-5 text-blue-400 mr-2" />
@@ -188,6 +203,7 @@ const TopPerformers = () => {
             </p>
           </div>
           
+          {/* Risk Level */}
           <div className="bg-gray-700 rounded-lg p-4" style={{backgroundColor: 'rgba(55, 65, 81, 0.3)'}}>
             <div className="flex items-center mb-3">
               <AlertTriangle className="w-5 h-5 text-orange-400 mr-2" />
