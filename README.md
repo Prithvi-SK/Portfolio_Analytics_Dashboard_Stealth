@@ -177,7 +177,9 @@ All requirements from the [Full-Stack Developer Intern Assignment](./Full-Stack%
      ```
      docker-compose up --build
      ```
-   - Access the dashboard at `http://localhost:3000` (or as configured).
+   - Access the dashboard at `http://localhost:5173` (or as configured).
+
+          
 
 2. **Manual Setup (for development)**
    - **Backend**
@@ -186,9 +188,20 @@ All requirements from the [Full-Stack Developer Intern Assignment](./Full-Stack%
    - **Frontend**
      - Install dependencies: `npm install` or `yarn`
      - Run development server: `npm start` or `yarn start`
-   - Access at `http://localhost:3000` (or specified port).
+   - Access at `http://localhost:5173` (or specified port).
 
 ---
+
+## View
+   - View frontend at
+   - http://localhost:5173
+   - View backend at 
+  - http://localhost:5173/api/portfolio/summary
+  - http://localhost:5173/api/portfolio/holdings
+  - http://localhost:5173/api/portfolio/historical-performance
+  - http://localhost:5173/api/portfolio/sector-allocation
+  - http://localhost:5173/api/portfolio/market-cap
+  - http://localhost:5173/api/portfolio/top-performers
 
 ## License
 
