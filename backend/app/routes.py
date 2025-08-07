@@ -29,7 +29,7 @@ router = APIRouter()
 @router.get("/api/portfolio/summary")
 def get_summary(db: Session = Depends(get_db)):
     try:
-        # Calculate summary metrics using formulas.py
+        
         total_value = total_value_calc(db)
         total_invested = total_invested_calc(db)
         gain_loss = gain_loss_calc(total_value, total_invested)
