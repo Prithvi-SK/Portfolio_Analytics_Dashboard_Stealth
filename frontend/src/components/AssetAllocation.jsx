@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { PieChart, TrendingUp } from 'lucide-react';
 import { getSectorAllocation, getMarketCapAllocation } from '../services/endpoints';
 
-// Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// Function to generate dynamic colors
 const generateColors = (length) => {
-  const colors = [];
+  const colors = [
+    '#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444',
+    '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1'
+  ];
+  const result = [];
   for (let i = 0; i < length; i++) {
-    const hue = (i * 360) / length; // Distribute hues evenly across the color wheel
-    colors.push(`hsl(${hue}, 70%, 50%)`);
+    result.push(colors[i % colors.length]);
   }
-  return colors;
+  return result;
 };
 
 const AssetAllocation = () => {
@@ -27,7 +29,7 @@ const AssetAllocation = () => {
       try {
         const sectorResponse = await getSectorAllocation();
         const marketCapResponse = await getMarketCapAllocation();
-
+        
         if (sectorResponse.error) {
           setError(sectorResponse.error.message || 'Failed to fetch sector allocation');
         } else {
@@ -36,9 +38,8 @@ const AssetAllocation = () => {
             value: item.value,
             percentage: item.percentage
           })));
-          console.log('Sector Data:', sectorResponse.data); // Debug log
         }
-
+        
         if (marketCapResponse.error) {
           setError(marketCapResponse.error.message || 'Failed to fetch market cap allocation');
         } else {
@@ -54,113 +55,113 @@ const AssetAllocation = () => {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-lg">Loading...</p>
+      <div className="flex justify-center items-center h-96 bg-gray-900 rounded-xl">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="loading-spinner" style={{borderTopColor: '#8b5cf6'}}></div>
+          <p className="text-lg text-gray-300">Loading asset allocation...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-lg text-red-500">Error: {error}</p>
+      <div className="flex justify-center items-center h-96 bg-gray-900 rounded-xl border" style={{borderColor: 'rgba(239, 68, 68, 0.2)'}}>
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+            <PieChart className="w-8 h-8 text-red-500" />
+          </div>
+          <p className="text-lg text-red-400 mb-2">Error Loading Charts</p>
+          <p className="text-gray-400">{error}</p>
+        </div>
       </div>
     );
   }
 
-  // Sector Distribution Chart Data
-  const sectorChartData = {
-    labels: sectorData.map(item => item.name),
-    datasets: [
-      {
-        data: sectorData.map(item => item.value),
-        backgroundColor: generateColors(sectorData.length),
-        hoverOffset: 20,
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  // Market Cap Distribution Chart Data
-  const marketCapChartData = {
-    labels: marketCapData.map(item => item.name),
-    datasets: [
-      {
-        data: marketCapData.map(item => item.value),
-        backgroundColor: generateColors(marketCapData.length),
-        hoverOffset: 20,
-        borderWidth: 1,
-      },
-    ],
-  };
+  const createChartData = (data) => ({
+    labels: data.map(item => item.name),
+    datasets: [{
+      data: data.map(item => item.value),
+      backgroundColor: generateColors(data.length),
+      borderColor: '#1F2937',
+      borderWidth: 2,
+      hoverOffset: 8,
+    }]
+  });
 
   const chartOptions = {
-    cutout: '60%', // Creates donut chart effect
+    cutout: '65%',
     plugins: {
       legend: {
         position: 'bottom',
         labels: {
-          generateLabels: (chart) => {
-            const data = chart.data;
-            if (data.labels.length && data.datasets.length) {
-              return data.labels.map((label, i) => ({
-                text: label,
-                fillStyle: data.datasets[0].backgroundColor[i],
-                strokeStyle: 'rgba(0,0,0,0.2)',
-                lineWidth: 1,
-                hidden: !chart.getDataVisibility(i),
-                index: i,
-              }));
-            }
-            return [];
-          },
-          boxWidth: 20,
-          padding: 10,
-          font: {
-            size: 14,
-          },
-          // Allow wrapping if labels are long
-          usePointStyle: true, // Use circular markers instead of boxes for better space
-        },
+          color: '#D1D5DB',
+          padding: 20,
+          font: { size: 12 },
+          usePointStyle: true,
+          pointStyle: 'circle'
+        }
       },
       tooltip: {
+        backgroundColor: '#1F2937',
+        titleColor: '#F9FAFB',
+        bodyColor: '#D1D5DB',
+        borderColor: '#374151',
+        borderWidth: 1,
         callbacks: {
           label: function (context) {
             const index = context.dataIndex;
             const dataset = context.dataset;
             const value = dataset.data[index];
-            const percentage = sectorData[index]?.percentage || marketCapData[index]?.percentage || 0;
+            const data = context.chart.data.labels[index] === sectorData[index]?.name ? sectorData : marketCapData;
+            const percentage = data[index]?.percentage || 0;
             return [
               `Value: ₹${value.toLocaleString('en-IN')}`,
-              `Percentage: ${(percentage * 100).toFixed(2)}%`,
+              `Percentage: ${(percentage * 100).toFixed(2)}%`
             ];
-          },
-        },
-      },
+          }
+        }
+      }
     },
     maintainAspectRatio: false,
-    responsive: true,
+    responsive: true
   };
 
   return (
-    <div className="asset-allocation p-4">
-      <h2 className="text-2xl font-bold mb-4">Asset Allocation</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="chart-container bg-white p-4 rounded-lg shadow-md">
-          <h3 className="text-xl font-semibold mb-2">Sector Distribution</h3>
-          <div className="relative" style={{ minHeight: '400px', maxHeight: '600px', overflowY: 'auto' }}>
-            <Doughnut data={sectorChartData} options={chartOptions} />
+    <div className="glass-effect rounded-xl p-6">
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold text-white mb-2">Asset Allocation</h2>
+        <p className="text-gray-400">Distribution of your investments across sectors and market caps</p>
+      </div>
+      
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <div className="chart-container">
+          <div className="flex items-center mb-6">
+            <div className="p-2 gradient-blue rounded-lg mr-3">
+              <PieChart className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-white">Sector Distribution</h3>
+          </div>
+          <div className="relative h-80">
+            <Doughnut data={createChartData(sectorData)} options={chartOptions} />
           </div>
         </div>
-        <div className="chart-container bg-white p-4 rounded-lg shadow-md">
-          <h3 className="text-xl font-semibold mb-2">Market Cap Distribution</h3>
-          <div className="relative" style={{ minHeight: '400px', maxHeight: '600px', overflowY: 'auto' }}>
-            <Doughnut data={marketCapChartData} options={chartOptions} />
+        
+        <div className="chart-container">
+          <div className="flex items-center mb-6">
+            <div className="p-2 gradient-purple rounded-lg mr-3">
+              <TrendingUp className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-white">Market Cap Distribution</h3>
+          </div>
+          <div className="relative h-80">
+            <Doughnut data={createChartData(marketCapData)} options={chartOptions} />
           </div>
         </div>
       </div>

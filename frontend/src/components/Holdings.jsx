@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, Building2 } from 'lucide-react';
 import { getHoldings } from '../services/endpoints';
 
 const Holdings = () => {
@@ -25,6 +26,7 @@ const Holdings = () => {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
@@ -42,7 +44,7 @@ const Holdings = () => {
       direction = 'descending';
     }
     setSortConfig({ key, direction });
-
+    
     const sortedData = [...filteredHoldings].sort((a, b) => {
       if (a[key] < b[key]) return direction === 'ascending' ? -1 : 1;
       if (a[key] > b[key]) return direction === 'ascending' ? 1 : -1;
@@ -53,73 +55,151 @@ const Holdings = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-lg">Loading...</p>
+      <div className="flex justify-center items-center h-96 bg-gray-900 rounded-xl">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="loading-spinner" style={{borderTopColor: '#10b981'}}></div>
+          <p className="text-lg text-gray-300">Loading holdings data...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-lg text-red-500">Error: {error}</p>
+      <div className="flex justify-center items-center h-96 bg-gray-900 rounded-xl border" style={{borderColor: 'rgba(239, 68, 68, 0.2)'}}>
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+            <Building2 className="w-8 h-8 text-red-500" />
+          </div>
+          <p className="text-lg text-red-400 mb-2">Error Loading Holdings</p>
+          <p className="text-gray-400">{error}</p>
+        </div>
       </div>
     );
   }
 
+  const columns = [
+    { key: 'symbol', label: 'Symbol', width: 'w-24' },
+    { key: 'company_name', label: 'Company', width: 'w-48' },
+    { key: 'quantity', label: 'Qty', width: 'w-20' },
+    { key: 'avg_price', label: 'Avg Price', width: 'w-28' },
+    { key: 'current_price', label: 'Current Price', width: 'w-32' },
+    { key: 'sector', label: 'Sector', width: 'w-32' },
+    { key: 'market_cap', label: 'Market Cap', width: 'w-28' },
+    { key: 'exchange', label: 'Exchange', width: 'w-24' },
+    { key: 'value', label: 'Value', width: 'w-32' },
+    { key: 'gain_loss', label: 'Gain/Loss', width: 'w-32' },
+    { key: 'gain_loss_percent', label: 'Gain/Loss %', width: 'w-32' }
+  ];
+
   return (
-    <div className="holdings p-4">
-      <h2 className="text-2xl font-bold mb-4">Holdings</h2>
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Search by symbol or company name"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 border border-gray-300 rounded w-full md:w-1/2 lg:w-1/3"
-        />
+    <div className="glass-effect rounded-xl p-6">
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold text-white mb-2">Holdings</h2>
+        <p className="text-gray-400">Detailed view of all your investments</p>
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr>
-              {['symbol', 'company_name', 'quantity', 'avg_price', 'current_price', 'sector', 'market_cap', 'exchange', 'value', 'gain_loss', 'gain_loss_percent'].map((key) => (
-                <th
-                  key={key}
-                  onClick={() => sortData(key)}
-                  className="px-4 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
-                >
-                  {key.replace('_', ' ')}
-                  {sortConfig.key === key && (
-                    <span>{sortConfig.direction === 'ascending' ? ' ▲' : ' ▼'}</span>
-                  )}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredHoldings.map((holding, index) => (
-              <tr key={index} className="hover:bg-gray-100 transition-colors duration-200">
-                <td className="px-4 py-2 border-b border-gray-200">{holding.symbol}</td>
-                <td className="px-4 py-2 border-b border-gray-200">{holding.company_name}</td>
-                <td className="px-4 py-2 border-b border-gray-200">{holding.quantity}</td>
-                <td className="px-4 py-2 border-b border-gray-200">₹{holding.avg_price.toFixed(2)}</td>
-                <td className="px-4 py-2 border-b border-gray-200">₹{holding.current_price.toFixed(2)}</td>
-                <td className="px-4 py-2 border-b border-gray-200">{holding.sector}</td>
-                <td className="px-4 py-2 border-b border-gray-200">{holding.market_cap}</td>
-                <td className="px-4 py-2 border-b border-gray-200">{holding.exchange}</td>
-                <td className="px-4 py-2 border-b border-gray-200">₹{holding.value.toFixed(2)}</td>
-                <td className={`px-4 py-2 border-b border-gray-200 ${holding.gain_loss >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  ₹{holding.gain_loss.toFixed(2)}
-                </td>
-                <td className={`px-4 py-2 border-b border-gray-200 ${holding.gain_loss_percent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {(holding.gain_loss_percent * 100).toFixed(2)}%
-                </td>
+
+      <div className="mb-6">
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Search by symbol or company name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="input-field"
+          />
+        </div>
+      </div>
+
+      <div className="table-container">
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead className="table-header">
+              <tr>
+                {columns.map((column) => (
+                  <th
+                    key={column.key}
+                    onClick={() => sortData(column.key)}
+                    className={`${column.width} table-cell text-left text-xs font-semibold text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-600 transition-colors duration-200 select-none`}
+                    style={{backgroundColor: 'rgba(75, 85, 99, 0.5)'}}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>{column.label}</span>
+                      {sortConfig.key === column.key ? (
+                        sortConfig.direction === 'ascending' ? (
+                          <ArrowUp className="w-4 h-4" />
+                        ) : (
+                          <ArrowDown className="w-4 h-4" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="w-4 h-4 opacity-50" />
+                      )}
+                    </div>
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-700">
+              {filteredHoldings.map((holding, index) => (
+                <tr
+                  key={index}
+                  className="table-row transition-colors duration-200"
+                >
+                  <td className="table-cell text-sm font-medium text-blue-400">
+                    {holding.symbol}
+                  </td>
+                  <td className="table-cell text-sm text-gray-300 truncate max-w-48">
+                    {holding.company_name}
+                  </td>
+                  <td className="table-cell text-sm text-gray-300">
+                    {holding.quantity}
+                  </td>
+                  <td className="table-cell text-sm text-gray-300">
+                    ₹{holding.avg_price.toFixed(2)}
+                  </td>
+                  <td className="table-cell text-sm text-gray-300">
+                    ₹{holding.current_price.toFixed(2)}
+                  </td>
+                  <td className="table-cell text-sm text-gray-300">
+                    <span className="px-2 py-1 bg-gray-700 rounded-full text-xs">
+                      {holding.sector}
+                    </span>
+                  </td>
+                  <td className="table-cell text-sm text-gray-300">
+                    <span className="px-2 py-1 bg-gray-700 rounded-full text-xs">
+                      {holding.market_cap}
+                    </span>
+                  </td>
+                  <td className="table-cell text-sm text-gray-300">
+                    {holding.exchange}
+                  </td>
+                  <td className="table-cell text-sm font-medium text-white">
+                    ₹{holding.value.toFixed(2)}
+                  </td>
+                  <td className={`table-cell text-sm font-medium ${
+                    holding.gain_loss >= 0 ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    ₹{holding.gain_loss.toFixed(2)}
+                  </td>
+                  <td className={`table-cell text-sm font-medium ${
+                    holding.gain_loss_percent >= 0 ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {(holding.gain_loss_percent * 100).toFixed(2)}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+      
+      {filteredHoldings.length === 0 && !loading && (
+        <div className="text-center py-12">
+          <Building2 className="w-16 h-16 mx-auto text-gray-600 mb-4" />
+          <p className="text-gray-400 text-lg">No holdings found matching your search.</p>
+        </div>
+      )}
     </div>
   );
 };
