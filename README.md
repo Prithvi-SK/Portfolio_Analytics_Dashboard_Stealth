@@ -49,6 +49,13 @@ Portfolio_Analytics_Dashboard_Stealth/
 ```
 
 ---
+<img width="1365" height="681" alt="image" src="https://github.com/user-attachments/assets/05804f6e-694e-4ebf-ba39-dbdc68086b49" />
+<img width="1365" height="677" alt="image" src="https://github.com/user-attachments/assets/ad875cf1-6687-4068-9967-88c35997aa71" />
+<img width="1365" height="678" alt="image" src="https://github.com/user-attachments/assets/9f24af8f-47d9-49ed-b7cf-e7e04235b997" />
+<img width="1365" height="676" alt="image" src="https://github.com/user-attachments/assets/aef8aa46-bfc9-4fa4-920a-352606daa3e4" />
+<img width="1365" height="676" alt="image" src="https://github.com/user-attachments/assets/f9aaf176-211b-45ec-9328-9c713f5db680" />
+<img width="1365" height="678" alt="image" src="https://github.com/user-attachments/assets/82392ca2-5e4e-4dd2-a9a4-70212a009b23" />
+<img width="1365" height="679" alt="image" src="https://github.com/user-attachments/assets/9963d7af-a9bf-4547-8708-47b5f1d1f50a" />
 
 ## Backend (API)
 
