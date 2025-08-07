@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, DollarSign, PieChart, Shield, BarChart3 } from 'lucide-react';
 import { getSummary } from '../services/endpoints';
 
+// Component to display a summarized overview of the portfolio
 const Overview = () => {
-  const [summary, setSummary] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [summary, setSummary] = useState(null); // Holds fetched summary data
+  const [loading, setLoading] = useState(true); // Tracks loading state
+  const [error, setError] = useState(null);     // Stores error messages
 
+  // Fetch portfolio summary data on component mount
   useEffect(() => {
     const fetchSummary = async () => {
       try {
@@ -26,6 +28,7 @@ const Overview = () => {
     fetchSummary();
   }, []);
 
+  // Show loading state
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64 bg-gray-900 rounded-xl">
@@ -37,6 +40,7 @@ const Overview = () => {
     );
   }
 
+  // Show error message if fetching failed
   if (error) {
     return (
       <div className="flex justify-center items-center h-64 bg-gray-900 rounded-xl border border-red-500" style={{borderColor: 'rgba(239, 68, 68, 0.2)'}}>
@@ -51,6 +55,7 @@ const Overview = () => {
     );
   }
 
+  // Define content for each summary card
   const cards = [
     {
       title: 'Total Portfolio Value',
@@ -105,6 +110,7 @@ const Overview = () => {
     }
   ];
 
+  // Render all summary cards in a responsive grid
   return (
     <div className="glass-effect rounded-xl p-6">
       <div className="mb-8">

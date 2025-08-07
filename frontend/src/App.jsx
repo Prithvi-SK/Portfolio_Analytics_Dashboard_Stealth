@@ -10,16 +10,6 @@ import Portfolio from './components/Portfolio';
 function App() {
 
   return (
-    // <Router>
-    //   <Routes>
-    //     <Route path="/overview"	element={<Overview />} />
-		// 		<Route path="/asset-allocation"	element={<AssetAllocation />} />
-		// 		<Route path="/holdings"	element={<Holdings />} />
-		// 		<Route path="/performance-comparison"	element={<PerformanceComparison />} />
-		// 		<Route path="/top-performers"	element={<TopPerformers />} />
-		// 		<Route path="/portfolio"	element={<Portfolio />} />
-    //   </Routes>
-    // </Router>
 		<Portfolio />
   )
 }

@@ -9,7 +9,7 @@ import TopPerformers from "./TopPerformers";
 function Portfolio() {
   return (
     <div className="min-h-screen gradient-bg">
-      {/* Header */}
+      {/* Dashboard Header with title and last updated timestamp */}
       <div className="header">
         <div className="container">
           <div className="flex items-center justify-between h-16">
@@ -26,7 +26,7 @@ function Portfolio() {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main content blocks for different portfolio insights */}
       <div className="container py-8">
         <div className="space-y-8">
           <Overview />
@@ -37,7 +37,7 @@ function Portfolio() {
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Footer with branding info */}
       <footer className="footer">
         <div className="container py-6">
           <div className="text-center text-gray-400">

@@ -14,6 +14,7 @@ import 'chartjs-adapter-date-fns';
 import { TrendingUp, Activity } from 'lucide-react';
 import { getHistoricalPerformance } from '../services/endpoints';
 
+// Register required Chart.js components
 ChartJS.register(LineElement, PointElement, LinearScale, TimeScale, Title, Tooltip, Legend);
 
 const PerformanceComparison = () => {
@@ -21,6 +22,7 @@ const PerformanceComparison = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch and sort performance data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -37,10 +39,10 @@ const PerformanceComparison = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
+  // Show loading spinner
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96 bg-gray-900 rounded-xl">
@@ -52,6 +54,7 @@ const PerformanceComparison = () => {
     );
   }
 
+  // Show error state
   if (error) {
     return (
       <div className="flex justify-center items-center h-96 bg-gray-900 rounded-xl border" style={{borderColor: 'rgba(239, 68, 68, 0.2)'}}>
@@ -66,6 +69,7 @@ const PerformanceComparison = () => {
     );
   }
 
+  // Normalize data for plotting (starting from 100)
   const normalizedData = performanceData.map(item => ({
     date: new Date(item.date),
     portfolio: (1 + item.portfolio_return) * 100,
@@ -73,6 +77,7 @@ const PerformanceComparison = () => {
     gold: (1 + item.gold_return) * 100,
   }));
 
+  // Chart.js dataset config
   const chartData = {
     labels: normalizedData.map(item => item.date),
     datasets: [
@@ -112,6 +117,7 @@ const PerformanceComparison = () => {
     ],
   };
 
+  // Chart.js options config
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -122,15 +128,9 @@ const PerformanceComparison = () => {
     scales: {
       x: {
         type: 'time',
-        time: {
-          unit: 'month',
-        },
-        grid: {
-          color: 'rgba(75, 85, 99, 0.3)',
-        },
-        ticks: {
-          color: '#9CA3AF',
-        },
+        time: { unit: 'month' },
+        grid: { color: 'rgba(75, 85, 99, 0.3)' },
+        ticks: { color: '#9CA3AF' },
       },
       y: {
         title: {
@@ -138,12 +138,8 @@ const PerformanceComparison = () => {
           text: 'Normalized Value (Starting at 100)',
           color: '#D1D5DB',
         },
-        grid: {
-          color: 'rgba(75, 85, 99, 0.3)',
-        },
-        ticks: {
-          color: '#9CA3AF',
-        },
+        grid: { color: 'rgba(75, 85, 99, 0.3)' },
+        ticks: { color: '#9CA3AF' },
       },
     },
     plugins: {
@@ -154,16 +150,10 @@ const PerformanceComparison = () => {
         borderColor: '#374151',
         borderWidth: 1,
         callbacks: {
-          title: (tooltipItems) => {
-            const date = tooltipItems[0].label;
-            return new Date(date).toLocaleDateString('en-US', { 
-              month: 'short', 
-              year: 'numeric' 
-            });
-          },
-          label: (tooltipItem) => {
-            return `${tooltipItem.dataset.label}: ${tooltipItem.parsed.y.toFixed(2)}`;
-          },
+          title: (tooltipItems) =>
+            new Date(tooltipItems[0].label).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+          label: (tooltipItem) =>
+            `${tooltipItem.dataset.label}: ${tooltipItem.parsed.y.toFixed(2)}`,
         },
       },
       legend: {
@@ -177,12 +167,14 @@ const PerformanceComparison = () => {
     },
   };
 
+  // Helper to calculate return over a given period
   const calculateReturn = (data, days) => {
     if (data.length < 2) return null;
+
     const latest = data[data.length - 1];
     const pastDate = new Date(latest.date);
     pastDate.setDate(pastDate.getDate() - days);
-    
+
     const pastData = data.reduce((prev, curr) => {
       const prevDiff = Math.abs(new Date(prev.date) - pastDate);
       const currDiff = Math.abs(new Date(curr.date) - pastDate);
@@ -196,6 +188,7 @@ const PerformanceComparison = () => {
     return { portfolioReturn, niftyReturn, goldReturn };
   };
 
+  // Return periods to show
   const periods = [
     { label: '1 Month', days: 30, returns: calculateReturn(performanceData, 30) },
     { label: '3 Months', days: 90, returns: calculateReturn(performanceData, 90) },
@@ -209,6 +202,7 @@ const PerformanceComparison = () => {
         <p className="text-gray-400">Compare your portfolio performance against market benchmarks</p>
       </div>
 
+      {/* Chart */}
       <div className="chart-container mb-8">
         <div className="flex items-center mb-6">
           <div className="p-2 gradient-blue rounded-lg mr-3">
@@ -221,36 +215,28 @@ const PerformanceComparison = () => {
         </div>
       </div>
 
+      {/* Return summaries */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {periods.map((period) => (
-          <div
-            key={period.label}
-            className="chart-container"
-          >
+          <div key={period.label} className="chart-container">
             <h4 className="text-lg font-semibold text-white mb-4">{period.label} Returns</h4>
             {period.returns ? (
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Portfolio:</span>
-                  <span className={`font-semibold ${
-                    period.returns.portfolioReturn >= 0 ? 'text-green-400' : 'text-red-400'
-                  }`}>
+                  <span className={`font-semibold ${period.returns.portfolioReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {period.returns.portfolioReturn.toFixed(2)}%
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Nifty 50:</span>
-                  <span className={`font-semibold ${
-                    period.returns.niftyReturn >= 0 ? 'text-green-400' : 'text-red-400'
-                  }`}>
+                  <span className={`font-semibold ${period.returns.niftyReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {period.returns.niftyReturn.toFixed(2)}%
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Gold:</span>
-                  <span className={`font-semibold ${
-                    period.returns.goldReturn >= 0 ? 'text-green-400' : 'text-red-400'
-                  }`}>
+                  <span className={`font-semibold ${period.returns.goldReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {period.returns.goldReturn.toFixed(2)}%
                   </span>
                 </div>
